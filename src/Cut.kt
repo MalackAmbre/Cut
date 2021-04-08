@@ -15,7 +15,7 @@ class Cut(
 ) {
 
 
-    fun valRange(range: String): List<Int> {
+    private fun valRange(range: String): List<Int> {
         val listR = mutableListOf<Int>()
         val parts: List<String> = range.split("-")
         val k: Int = parts[1].toInt()
@@ -72,7 +72,7 @@ class Cut(
     }
 
     fun cutInfo() {
-        var list = mutableListOf<String>()
+        val list: MutableList<String>
         val br: BufferedReader?
         try {
             br = if (iName != null) {
@@ -80,9 +80,12 @@ class Cut(
                 BufferedReader(InputStreamReader(FileInputStream(file)))
             } else BufferedReader (InputStreamReader (System.`in`))
 
-            list.add(br.readLine())
+                list = br.readLines().toMutableList()
+            /**
+             * ecrire ctrl + D quand tu rune le programme
+             */
 
-        } catch (e: IOException) {
+        }catch (e: IOException) {
             throw IllegalArgumentException(
                 "Error in the receveid file"
                         + " Rewrite the command correctly please."
