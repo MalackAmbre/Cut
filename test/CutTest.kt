@@ -1,22 +1,26 @@
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-internal class CutTest {
+class CutTest {
     @Test
-    fun testConsole() {
+    fun testCorrectConsole() {
         val c = Cut("file/input", "file/output", true, "2-5")
         c.cutInfo()
         val m = Cut("file/input", "file/nOutput", false, "2-5")
         m.cutInfo()
-        val r = Cut("file/input", "file/nOutput", true, "5-2")
-        r.cutInfo()
-        AssertionError(
-            "Invalid Range.The first number must be less than the second.Rewrite the command correctly please."
-        )
-        val f =Cut("input.txt", "file/output", true, "2-5")
-        f.cutInfo()
-        AssertionError(
-            "Error in the receveid file" +
-                    " Rewrite the command correctly please."
-        )
+
+    }
+    @Test
+    fun  testInvalidRange(){
+        assertThrows<IllegalArgumentException> {
+            Cut("file/input", "file/nOutput", true, "5-2").cutInfo()
+        }
+    }
+
+    @Test
+    fun inexistingFile(){
+        assertThrows<IllegalArgumentException> {
+            Cut("inputFile", "file/output", true, "2-5").cutInfo()
+        }
     }
 }

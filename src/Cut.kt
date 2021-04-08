@@ -1,3 +1,4 @@
+
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Option
@@ -20,22 +21,22 @@ class Cut(
         val k: Int = parts[1].toInt()
         val n: Int = parts[0].toInt()
         if (k <= n) {
-            System.err.println(
+            throw IllegalArgumentException(
                 "Invalid Range." +
                         "The first number must be less than the second." +
                         "Rewrite the command correctly please."
             )
-            exitProcess(2)
         }
-
-        listR.add(n)
-        listR.add(k)
+        if (k > n ) {
+            listR.add(n)
+            listR.add(k)
+        }
         return listR
     }
 
 
 
-    fun cutPart(line: String, symOrWord: Boolean, valRange: List<Int>): String {
+    private fun cutPart(line: String, symOrWord: Boolean, valRange: List<Int>): String {
         val line1 = line.trim()
         var string = ""
         if (!symOrWord) {
@@ -59,14 +60,14 @@ class Cut(
     }
 
 
-    fun writer(result: String) {
+    private fun writer(result: String) {
         try {
             if (oName != null ){
-                File(oName).writeText(result)
+                    File(oName).writeText(result)
             }
 
         } catch (e: IOException) {
-            println(e.message)
+            throw IllegalArgumentException(e.message)
         }
     }
 
@@ -79,10 +80,10 @@ class Cut(
                 BufferedReader(InputStreamReader(FileInputStream(file)))
             } else BufferedReader (InputStreamReader (System.`in`))
 
-            list = br.readLines().toMutableList()
+            list.add(br.readLine())
 
         } catch (e: IOException) {
-            println(
+            throw IllegalArgumentException(
                 "Error in the receveid file"
                         + " Rewrite the command correctly please."
             )
@@ -125,12 +126,6 @@ class Cut(
             try {
                 commandLine = clParser.parse(options, args)
                 val cl = commandLine.argList
-
-                val symOrWord: Boolean =
-                    if (commandLine.hasOption("-w") && commandLine.hasOption("-c"))
-                        throw IllegalArgumentException()
-                    else if(commandLine.hasOption("-c")) false
-                    else if (commandLine.hasOption("-w")) true else throw IllegalArgumentException()
                 var ofile: String? = null
                 var ifile: String? = null
                 val valRange: String
@@ -140,15 +135,23 @@ class Cut(
                         ifile = cl[1]
                         valRange = cl[2]
                     } else valRange = cl[1]
-                } else {
+                }
+                else {
                     if (cl.size == 2) {
                         ifile = cl[0]
                         valRange = cl[1]
                     }
                     else valRange = cl[0]
                 }
+                val symOrWord: Boolean =
+                    if (commandLine.hasOption("-w") && commandLine.hasOption("-c"))
+                        throw IllegalArgumentException()
+                    else if(commandLine.hasOption("-c")) false
+                    else if (commandLine.hasOption("-w")) true else throw IllegalArgumentException()
+
                 val cut = Cut(ifile, ofile, symOrWord, valRange)
                 cut.cutInfo()
+
 
             } catch (e: Exception) {
                 System.err.println(e.message)
